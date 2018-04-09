@@ -42,6 +42,7 @@ class EnOceanDongle:
 
     def __init__(self, hass, ser):
         """Initialize the EnOcean dongle."""
+        _LOGGER.debug("Initialize the EnOcean dongle.")
         from enocean.communicators.serialcommunicator import SerialCommunicator
         self.__communicator = SerialCommunicator(
             port=ser, callback=self.callback)
@@ -50,10 +51,12 @@ class EnOceanDongle:
 
     def register_device(self, dev):
         """Register another device."""
+        _LOGGER.debug("Register another EnOcean device")
         self.__devices.append(dev)
 
     def send_command(self, command):
         """Send a command from the EnOcean dongle."""
+        _LOGGER.debug("Send a command from EnOcean dongle, %s", command);
         self.__communicator.send(command)
 
     # pylint: disable=no-self-use
@@ -70,6 +73,7 @@ class EnOceanDongle:
         This is the callback function called by python-enocan whenever there
         is an incoming packet.
         """
+        _LOGGER.debug("Handle EnOcean device's callback.");
         from enocean.protocol.packet import RadioPacket
         if isinstance(temp, RadioPacket):
             _LOGGER.debug("Received radio packet: %s", temp)
@@ -117,6 +121,7 @@ class EnOceanDevice():
 
     def __init__(self):
         """Initialize the device."""
+        _LOGGER.debug("Initialize the device.")
         ENOCEAN_DONGLE.register_device(self)
         self.stype = ""
         self.sensorid = [0x00, 0x00, 0x00, 0x00]
@@ -124,6 +129,7 @@ class EnOceanDevice():
     # pylint: disable=no-self-use
     def send_command(self, data, optional, packet_type):
         """Send a command via the EnOcean dongle."""
+        _LOGGER.debug("Send a command via the EnOcean dongle, data: %s, packet_type: %s", data, packet_type);
         from enocean.protocol.packet import Packet
         packet = Packet(packet_type, data=data, optional=optional)
         ENOCEAN_DONGLE.send_command(packet)
